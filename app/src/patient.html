@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>ArogyaBlock | Patient</title>
+    <script src="js/bundle.js"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+</head>
+
+<body >
+
+        <!-- Navigation -->
+        <header id="header" class="header sticky-top" style="box-shadow: 0px 0px 10px 8px #1977cc15;">
+            <div class="branding d-flex align-items-center">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="container position-relative d-flex align-items-center justify-content-between">
+                    <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button> -->
+                    <a href="index.html" class="logo d-flex align-items-center me-auto">
+                        <!-- Uncomment the line below if you also wish to use an image logo -->
+                        <!-- <img src="assets/img/logo.png" alt=""> -->
+                        <h1 class="sitename">ArogyaBlock</h1>
+                      </a>
+                      <a class="cta-btn d-none d-sm-block" href="./index.html">Logout</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="./index.html">Logout</a>
+                        </li>
+                    </ul>
+                </div> -->
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </header>
+        <br>
+
+       
+            <div>
+                <!-- Section Title -->
+                <div class="">
+                    <h3 class="text-center">Personal Information</h3>
+                    <p></p>
+                </div><!-- End Section Title -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-offset-1 col-sm-12">
+                            <div style="width: 60%; margin: auto;">
+                            <table class="table">
+                                <tr>
+                                    <th>Name:</th>
+                                    <td id="name"></td>
+                                </tr>
+                                <tr>
+                                    <th>Age:</th>
+                                    <td id="age"></td>
+                                </tr>
+                            </table>
+                            
+                            
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <div class="text-center" style="background-color: #f2f2f2; padding: 80px 0;">
+                <h5>Your records are stored here:</h5><p><a href=""> http://localhost:8080/ipfs/<span id="recordsHash"></span></a></p><br>
+                <button type="submit" class="cta-btn" onclick="showRecords(this)">View medical records</button>
+            </div>
+            <pre id="records" style="padding: 40px; width: 60%; margin: auto; font-family: poppins; border: 2px solid #1977cc; border-radius: 10px; background-color: #1977cc10; color:#2c4964;">
+                <div id="notinclude">
+                    <div class="row" style="margin-top: -50px;">
+                        <div class="form-group col-sm-10">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="symptoms" style="margin-left: -120px;"><b>Symptoms:</b></label>
+                                </div>
+                                <div class="col-sm-10" style="margin-left: 30px; margin-top: -80px;">
+                                    <div id="symptoms">
+                                        <select class="form-control" id="symp1" style="margin-bottom: -65px;" required>
+                                            <option selected disabled>-- Select Symptom 1 --</option>
+                                            <!-- Options will be dynamically added here -->
+                                        </select>
+                                        <br>
+                                        <select class="form-control" id="symp2" style="margin-bottom: -65px;" required>
+                                            <option selected disabled>-- Select Symptom 2 --</option>
+                                        </select>
+                                        <br>
+                                        <select class="form-control" id="symp3" style="margin-bottom: -65px;" required>
+                                            <option selected disabled>-- Select Symptom 3 --</option>
+                                        </select>
+                                        <br>
+                                        <select class="form-control" id="symp4" style="margin-bottom: -65px;" required>
+                                            <option selected disabled>-- Select Symptom 4 --</option>
+                                        </select>
+                                        <br>
+                                        <select class="form-control" id="symp5" required>
+                                            <option selected disabled>-- Select Symptom 5 --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" style="margin-top: -200px;">
+                        <div class="form-group col-sm-10">
+                            <div class="row">
+                                <div class="col-sm-2"><label for="intensity" class="control-label"><b>Intensity:</b></label></div>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="intensity" style="width:inherit; margin-left: -85px;" required>
+                                        <option selected disabled>-- Please Select --</option>
+                                        <option value="0">Low</option>
+                                        <option value="1">Normal</option>
+                                        <option value="2">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group" style="align-item:centre; margin-left:80px; margin-top: -160px;">
+                        <button class="cta-btn btn-block" onclick="submitSymptoms(this)">Submit</button>
+                    </div>
+                </div>
+            </pre>
+            
+            
+            <div style="margin-top: 50px;">
+                <div class="panel-heading">
+                    <h3 class="text-center">Share your Medical Record</h3>
+                </div>
+                <div>
+                    <div class="row" style="width:60%; margin: auto;">
+                        <div class="alert alert-info" >
+                            <strong>Info!</strong> The doctor already has access to your records. Revoke access or wait for time duration to end to continue.
+                        </div>
+                    </div>
+
+                    
+                    <form class="form-horizontal" action="/action_page.php">
+                        <div class="form-group" style="width:60%; margin:auto;"> 
+                            <label for="permitDoctorList" class="control-label col-sm-2">Doctor:</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="permitDoctorList">
+                                    <option selected disabled>-- Please Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <div class="text-center">
+                        <button onclick = "giveAccess()" class="cta-btn">Submit</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="" style="width:60%; margin:auto">
+                <div class="">
+                    <h3 class="text-center">Current Health record access holders</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="alert alert-danger col-sm-8 col-sm-offset-2">
+                            <strong>Notice!</strong> The access could not be revoked. Please retry or contact admin.
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-offset-1 col-sm-10">
+                            <table id="accessDoc" class="table table-hover">
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th class="publicKeyDoctor">Public Key</th>
+                                    <th>Revoke access</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>           
+        
+
+<script src="js/jquery.js"></script>
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+<!-- Vendor JS Files -->
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script src="/js/web3.min.js"></script>
+<script src="js/app.js"></script>
+<script src="https://unpkg.com/ipfs-api/dist/index.min.js" crossorigin="anonymous"></script>
+
+<script>
+    var ipfs = window.IpfsApi('localhost', '5001')
+    const Buffer = window.IpfsApi().Buffer;
+    
+    // Populate dropdowns with symptom options
+const symptomOptions = [
+    'itching', 'skin_rash', 'nodal_skin_eruptions', 'continuous_sneezing', 
+    'shivering', 'chills', 'joint_pain', 'stomach_pain', 'acidity', 'ulcers_on_tongue', 
+    'muscle_wasting', 'vomiting', 'burning_micturition', 'spotting_ urination', 'fatigue', 
+    'weight_gain', 'anxiety', 'cold_hands_and_feets', 'mood_swings', 'weight_loss', 'restlessness', 
+    'lethargy', 'patches_in_throat', 'irregular_sugar_level', 'cough', 'high_fever', 'sunken_eyes', 
+    'breathlessness', 'sweating', 'dehydration', 'indigestion', 'headache', 'yellowish_skin', 
+    'dark_urine', 'nausea', 'loss_of_appetite', 'pain_behind_the_eyes', 'back_pain', 'constipation', 
+    'abdominal_pain', 'diarrhoea', 'mild_fever', 'yellow_urine', 'yellowing_of_eyes', 
+    'acute_liver_failure', 'fluid_overload', 'swelling_of_stomach', 'swelled_lymph_nodes', 'malaise', 
+    'blurred_and_distorted_vision', 'phlegm', 'throat_irritation', 'redness_of_eyes', 'sinus_pressure', 
+    'runny_nose', 'congestion', 'chest_pain', 'weakness_in_limbs', 'fast_heart_rate', 
+    'pain_during_bowel_movements', 'pain_in_anal_region', 'bloody_stool', 'irritation_in_anus', 
+    'neck_pain', 'dizziness', 'cramps', 'bruising', 'obesity', 'swollen_legs', 
+    'swollen_blood_vessels', 'puffy_face_and_eyes', 'enlarged_thyroid', 'brittle_nails', 
+    'swollen_extremeties', 'excessive_hunger', 'extra_marital_contacts', 'drying_and_tingling_lips', 
+    'slurred_speech', 'knee_pain', 'hip_joint_pain', 'muscle_weakness', 'stiff_neck', 'swelling_joints', 
+    'movement_stiffness', 'spinning_movements', 'loss_of_balance', 'unsteadiness', 'weakness_of_one_body_side', 
+    'loss_of_smell', 'bladder_discomfort', 'foul_smell_of urine', 'continuous_feel_of_urine', 'passage_of_gases', 
+    'internal_itching', 'toxic_look_(typhos)', 'depression', 'irritability', 'muscle_pain', 'altered_sensorium', 
+    'red_spots_over_body', 'belly_pain', 'abnormal_menstruation', 'dischromic _patches', 'watering_from_eyes', 
+    'increased_appetite', 'polyuria', 'family_history', 'mucoid_sputum', 'rusty_sputum', 'lack_of_concentration', 
+    'visual_disturbances', 'receiving_blood_transfusion', 'receiving_unsterile_injections', 'coma', 'stomach_bleeding', 
+    'distention_of_abdomen', 'history_of_alcohol_consumption', 'fluid_overload', 'blood_in_sputum', 'prominent_veins_on_calf', 
+    'palpitations', 'painful_walking', 'pus_filled_pimples', 'blackheads', 'scurring', 'skin_peeling', 
+    'silver_like_dusting', 'small_dents_in_nails', 'inflammatory_nails', 'blister', 'red_sore_around_nose', 'yellow_crust_ooze'
+];
+symptomOptions.sort();
+
+function populateDropdowns() {
+    for (let i = 1; i <= 5; i++) {
+        const dropdown = document.getElementById(`symp${i}`);
+        symptomOptions.forEach(symptom => {
+            const option = document.createElement('option');
+            option.value = symptom;
+            option.textContent = symptom;
+            dropdown.appendChild(option);
+        });
+    }
+}
+
+populateDropdowns();
+
+    var intensityDict = {};
+    intensityDict[0] = "Low";
+    intensityDict[1] = "Normal";
+    intensityDict[2] = "High";
+
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var key ;
+    var pname="";
+    toggleRecordsButton = 0;
+    var recordHash = "";
+
+    $(window).load(function() {
+        connect();
+        $("#records").hide();
+        $(".alert-info").hide();
+        $(".alert-danger").hide();
+        key = web3.currentProvider.selectedAddress;
+        key = key.toLocaleLowerCase();
+
+        var a = "";
+        var b = 0;
+        var c= "";
+        var ailments = [];
+        var insurerName = "";
+
+        $("#buyInsurance").hide();
+        $("#insuranceInfo").hide();
+        
+        // print patient details and insurer details (if exists). If insurer does not exist show the buy insurance panel
+        console.log("Getting Patient Data");
+        contractInstance.get_patient.call(key, {gas: 1000000}, function(error, result){
+            console.log("Patient Data Result:"+result);
+            if(!error){
+                console.log(result);
+                a = result[0]; 
+                b = result[1];
+                c = result[2];
+                ailments = result[2];
+                insurerAddress = result[3];
+                recordHash = result[4];
+                $("#name").html(a);
+                $("#age").html(b.c[0]);
+                $("#recordsHash").html(recordHash);
+                pname=a;
+
+                if (insurerAddress != 0){
+                    $("#buyInsurance").hide();
+
+
+                } else {
+                    var InsurerList = 0;
+                    
+                    contractInstance.get_insurer_list({gas: 1000000}, function(error, result){
+
+                        if(!error){
+                            
+                            InsurerList = result;
+                            var list = document.getElementById("insurers");
+                            for (var i = 0; i < InsurerList.length; i++) {
+                                
+                                contractInstance.get_insurer.call(InsurerList[i], {gas: 1000000}, function(error, result){
+                                    
+                                    
+                                    if(!error){
+                                        d = result[0];
+
+                                        var option = document.createElement("option");
+                                        option.text = d;
+
+                                        list.add(option);
+                                    } else{
+                                        console.log(error);
+                                    }
+                                })
+                            }
+                        }
+                    })
+                    $("#buyInsurance").show();
+
+                    $("#insuranceInfo").hide();
+                }
+            }
+            else
+                console.error(error);
+        });
+        
+        // print out the doctors to share emr
+        var DoctorList = 0;
+        console.log("Getting Doctor List");
+        contractInstance.get_doctor_list({gas: 1000000},function(error, result){
+
+            if(!error) {
+
+                DoctorList = result;
+
+                for(var i = 0; i < DoctorList.length; i++) {
+                    contractInstance.get_doctor.call(DoctorList[i], {gas: 1000000},function(error, result){
+
+                        var list = document.getElementById("permitDoctorList");
+
+                        if(!error) {
+                            [a, b] = result; 
+                            var option = document.createElement("option");
+                            option.text = a;
+                            list.add(option);
+                            // console.log(a);
+                        }
+                        else
+                            console.error(error);
+                    })
+                }
+            } 
+            else
+                console.error(error);
+        });
+
+        // print out the doctors who have access
+        var doctorAddressList = 0;
+        contractInstance.get_accessed_doctorlist_for_patient(key, {gas: 1000000}, function(error, result){
+            if(!error){
+                doctorAddressList = result;
+                // console.log(result);
+                
+               
+                doctorAddressList.forEach(function(doctorAddress, index){
+                    contractInstance.get_doctor.call(doctorAddress, {gas: 1000000}, function(error, result){
+                        var table = document.getElementById("accessDoc");
+                        if(!error) {
+                            [a,b] = result;
+                            console.log(a);
+                            var row = table.insertRow(index+1);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            cell2.className = "publicKeyDoctor";
+                            cell1.innerHTML = a;
+                            cell2.innerHTML = doctorAddress;
+                            cell3.innerHTML = '<button onclick="revokeAccess(this)" style="background-color:red;" class="cta-btn">Revoke access</button>';
+                            console.log(result);
+                        }
+                        else
+                            console.error(error);
+                    })
+                })
+            }
+            else 
+                console.error(error);
+        });
+
+    });
+    function showRecords(element){
+        if (toggleRecordsButton%2 == 0){
+
+            $.get("http://localhost:8080/ipfs/"+recordHash, function(data){
+                // $("#records").html(data);
+                // $("#records").show();
+                $("#records").html(data + $("#records").html());
+                $("#records").show();
+            })
+
+            toggleRecordsButton +=1
+
+            element.innerHTML = "Hide Medical Records";
+            element.className = "cta-btn";
+        } else{
+            $("#records").hide();
+            toggleRecordsButton -=1;
+            element.innerHTML = "View Medical Records";
+            element.className = "cta-btn"
+        }
+        
+    }
+
+    
+
+    function giveAccess() {
+
+        var list = document.getElementById("permitDoctorList");
+        index = list.selectedIndex;
+
+        var DoctorList = 0;
+
+        contractInstance.get_doctor_list({gas: 1000000}, function(error, result){
+
+            if(!error) {
+                // console.log(index);
+
+                DoctorList = result;
+                doctorToBeAdded = DoctorList[index-1];
+                contractInstance.permit_access.sendTransaction(doctorToBeAdded, {from: key, gas: 1000000, value: web3.toWei(2, 'ether')}, function(error){
+                    if (!error) {
+                        var table = document.getElementById("accessDoc");
+                        noRows = table.rows.length;
+                        var row = table.insertRow(noRows);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+
+                        cell2.className = "publicKeyDoctor";
+                        cell1.innerHTML = $("#permitDoctorList").val();
+                        cell2.innerHTML = doctorToBeAdded;
+                        cell3.innerHTML = '<button onclick="revokeAccess(this)" class="btn btn-danger">Revoke access</button>';
+
+                    } else {
+                        $(".alert-info").show();
+                        console.log(error);
+                    }
+                                            
+                })
+
+            } else
+                console.log(error);
+        })
+    }
+
+    function revokeAccess(element) {
+
+        rowNo = element.parentNode.parentNode.rowIndex;
+        Row = element.parentNode.parentNode;
+        var Cells = Row.getElementsByTagName("td");
+        var docKey = Row.cells[1].firstChild.nodeValue;
+        contractInstance.revoke_access(docKey, {gas: 1000000}, function(error){
+            if (!error) {
+                document.getElementById("accessDoc").deleteRow(rowNo);
+            } else {
+                $(".alert-danger").show();
+                console.log(error);
+            }
+                                    
+        });
+    }
+
+    // New 
+    function submitSymptoms(element,index)
+    {
+        // var table = document.getElementById("viewPatient");
+        // var patientAddress = table.rows[index].cells[1].innerHTML;
+
+        // console.log(patientAddress);
+         var diagnosis = $("#intensity").val();
+         diagnosis = parseInt(diagnosis);
+         var diagnosed = intensityDict[diagnosis];
+         console.log("Diagnosis ",diagnosis);
+        var symp1 = document.getElementById("symp1").value;
+        var symp2 = document.getElementById("symp2").value;
+        var symp3 = document.getElementById("symp3").value;
+        var symp4 = document.getElementById("symp4").value;
+        var symp5 = document.getElementById("symp5").value;
+        var symp = symp1+", "+symp2+", "+symp3+", "+symp4+", "+symp5
+        console.log("SYMP", symp);
+        
+        console.log('symp ', symp);
+        var oldRecords = $("#records").clone(); // Clone to avoid modifying original content
+    oldRecords.find("#notinclude").remove(); // Remove the #notinclude element and its children
+    var resultt = oldRecords.html(); // Get the remaining HTML content
+
+
+        console.log( "oldrecords ",resultt);
+        var newRecords = 
+`
+Symptoms updated By : ${pname}
+Symptomes updation Time : ${getDateTime()}
+Intensity: ${diagnosed}
+Symptomes : ${symp}
+-------------------------------------------------
+`
+        console.log("newRecords", newRecords);
+        var updatedRecords = resultt+newRecords;
+        console.log("updatedRecords", updatedRecords);
+
+        if (!isNaN(diagnosis)){
+            console.log("Innn");
+            var buffer = Buffer(updatedRecords);
+
+            ipfs.files.add(buffer, (error, result) => {
+                if(error){
+                    console.log("Hereeee");
+                    console.log(error)
+                }else{
+                    console.log("goood");
+                    ipfshash = result[0].hash;
+                    contractInstance.set_hash_public(key, ipfshash, {gas: 1000000}, function(error, result){
+                        if(!error){
+                            alert("Your symptomes has been submitted.");
+                            // // delete content row
+                            // table.deleteRow(index+1);
+
+                            // // delete main row of corresponding content row
+                            // table.deleteRow(index); 
+                        }else{
+                            console.log("big error", error.message);
+                            $(".alert-danger").show();
+                            //console.log(error);
+                        }
+                    })
+                }
+            });
+
+            }
+            else{
+                alert("Select a diagnosis");
+            }
+            }
+
+        function getDateTime(){
+            function AddZero(num) {
+                return (num >= 0 && num < 10) ? "0" + num : num + "";
+            }
+            var now = new Date();
+            var strDateTime = [[AddZero(now.getDate()), 
+            AddZero(now.getMonth() + 1), 
+            now.getFullYear()].join("/"), 
+            [AddZero(now.getHours()), 
+            AddZero(now.getMinutes())].join(":"), 
+            now.getHours() >= 12 ? "PM" : "AM"].join(" ");
+            return strDateTime;
+        }
+
+</script>
+
+</body>
+
+</html>

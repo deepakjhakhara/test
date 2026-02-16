@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>ArogyaBlock | Register</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- Web3 and Other JS Libraries -->
+  <script src="/js/web3.min.js"></script>
+  <script src="https://unpkg.com/ipfs-api/dist/index.min.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body class="index-page">
+
+  <!-- Header -->
+  <header id="header" class="header sticky-top">
+    <div class="branding d-flex align-items-center">
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center me-auto">
+          <h1 class="sitename">ArogyaBlock</h1>
+        </a>
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="./index.html">Login</a></li>
+            <li><a href="./register.html" class="active">Register</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+
+  <main class="main">
+
+    <!-- Registration Section -->
+    <section id="register" class="register section">
+      <div class="container" data-aos="fade-up">
+        <div class="section-title">
+          <h2>Register</h2>
+          <p>Please enter your details to register.</p>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-6">
+
+            <!-- Alert Messages -->
+            <div class="alert alert-warning" id="warning-alert" style="display: none;">
+              <strong>Warning!</strong> Invalid public key. Please enter a valid public key to register.
+            </div>
+
+            <div class="alert alert-info" id="info-alert" style="display: none;">
+              <strong>Info!</strong> User already registered. Please check your details.
+            </div>
+            <!-- End Alert Messages -->
+
+            <form name="registerForm" class="php-email-form" onsubmit="return addAgent();">
+              <div class="form-group mt-3">
+                <label for="name">Name:</label>
+                <input type="text" name="Name" class="form-control" id="name" placeholder="Enter your name" required autofocus>
+              </div>
+              <div class="form-group mt-3">
+                <label for="age">Age:</label>
+                <input type="number" name="Age" class="form-control" id="age" placeholder="Enter your age" required>
+              </div>
+              <div class="form-group mt-3">
+                <label for="designation">Registering as:</label>
+                <select name="Designation" id="designation" class="form-select" required>
+                  <option value="" disabled selected>-- Please Select --</option>
+                  <option value="0">Patient</option>
+                  <option value="1">Doctor</option>
+                </select>
+              </div>
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">Register</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Registration Section -->
+
+  </main>
+
+  <!-- Scroll Top Button -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <!-- jQuery -->
+  <script src="js/jquery.js"></script>
+
+  <!-- Custom JS Files -->
+  <script src="js/app.js"></script>
+  <script>
+    $(document).ready(function() {
+      connect();
+    });
+
+    function addAgent() {
+      const ipfs = window.IpfsApi('localhost', '5001');
+      const Buffer = window.IpfsApi().Buffer;
+
+      const name = $("#name").val();
+      const age = $("#age").val();
+      const email = $("#email").val();
+      let designation = $("#designation").val();
+      designation = parseInt(designation);
+
+      let publicKey = web3.currentProvider.selectedAddress;
+      publicKey = publicKey.toLowerCase();
+      console.log("Public Key:", publicKey);
+
+      let validAgent = true;
+
+      contractInstance.get_patient_list({ gas: 1000000 }, function(error, PatientList) {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        contractInstance.get_doctor_list({ gas: 1000000 }, function(error, DoctorList) {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (PatientList.includes(publicKey) || DoctorList.includes(publicKey)) {
+            validAgent = false;
+            $("#info-alert").show();
+            return;
+          }
+
+          $("#warning-alert").hide();
+          $("#info-alert").hide();
+
+          const userData = `Name: ${name}\nAge: ${age}\nEmail: ${email}\nPublic Key: ${publicKey}`;
+          const buffer = Buffer.from(userData);
+
+          ipfs.files.add(buffer, (error, result) => {
+            if (error) {
+              console.error(error);
+              return;
+            }
+            const ipfsHash = result[0].hash;
+            console.log("IPFS Hash:", ipfsHash);
+
+            contractInstance.add_agent(name, age, email, designation, ipfsHash, { gas: 1000000 }, (err, res) => {
+              if (err) {
+                console.error(err);
+                return;
+              }
+              if (designation === 0) {
+                window.location.href = "./patient.html?key=" + publicKey;
+              } else if (designation === 1) {
+                window.location.href = "./doctor.html?key=" + publicKey;
+              }
+            });
+          });
+        });
+      });
+
+      return false; // Prevent form submission
+    }
+  </script>
+
+</body>
+
+</html>
