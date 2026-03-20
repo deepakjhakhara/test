@@ -5,7 +5,6 @@ ArogyaBlock is a blockchain-enabled electronic medical records (EMR) demo applic
 - **Solidity + Truffle** for smart contracts
 - **Web3.js + static HTML/JS UI** for dApp interaction
 - **IPFS** for off-chain record content storage
-- An optional **ML prediction API** used during doctor diagnosis workflows
 - An optional **AI gateway API** that generates (a) patient symptom preliminary diagnosis for doctors and (b) simplified doctor diagnosis for patients
 
 The project models two actor roles:
@@ -45,7 +44,6 @@ The project models two actor roles:
 2. **Register** as patient or doctor via `add_agent`.
 3. **Patient grants access** to a doctor by paying an exact `2 ether` access fee into contract pool.
 4. **Doctor reads patient record** hash and content from IPFS.
-5. **Doctor submits diagnosis** (optionally enriched with ML prediction API response).
 5. **Doctor submits diagnosis** and AI gateway generates a patient-friendly simplified explanation.
 6. **Insurance claim flow** updates record hash, pays out from contract pool, and removes doctor access.
 7. **Patient can revoke access** and receive refund if claim not consumed.
@@ -91,7 +89,6 @@ Install these locally before running:
 - **MetaMask** browser extension
 - **IPFS daemon/API** reachable at `localhost:5001`
 - **IPFS gateway** reachable at `localhost:8080`
-- *(Optional but used by doctor workflow)* ML backend serving `POST /predict` (default expected at `127.0.0.1:5000`)
 - *(Optional but recommended for patient/doctor language bridge)* AI gateway serving:
   - `POST /ai/preliminary-diagnosis`
   - `POST /ai/simplify-diagnosis`
@@ -134,7 +131,6 @@ Ensure:
 - API: `localhost:5001`
 - Gateway: `localhost:8080`
 
-### 4) (Optional) Start ML prediction backend
 ### 4) (Optional but recommended) Start AI gateway backend
 
 The frontend uses either:
@@ -295,11 +291,9 @@ For multi-environment usage, centralize these values via build/runtime config.
 - Check IPFS daemon and gateway availability
 - Validate saved hash exists in IPFS
 
-### Prediction API errors
 ### AI gateway errors
 
 - Start backend at `127.0.0.1:5000`, or
-- pass `?mlApiBase=http://<host>:<port>` in URL
 - pass `?aiApiBase=http://<host>:<port>` in URL
 - verify provider-specific keys in `app/.env` (`GROQ_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`)
 - verify `AI_PROVIDER` is set correctly (`groq`, `gemini`, `openai`, `openai_compatible`, or `anthropic`)
