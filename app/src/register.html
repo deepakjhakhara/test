@@ -77,7 +77,7 @@
             </div>
             <!-- End Alert Messages -->
 
-            <form name="registerForm" class="php-email-form" onsubmit="return addAgent();">
+            <form id="registerForm" name="registerForm" class="php-email-form">
               <div class="form-group mt-3">
                 <label for="name">Name:</label>
                 <input type="text" name="Name" class="form-control" id="name" placeholder="Enter your name" required autofocus>
@@ -133,78 +133,112 @@
   <script>
     $(document).ready(function() {
       connect().catch(function(error){ console.error(error); });
+      $("#registerForm").on("submit", function(event) {
+        event.preventDefault();
+        addAgent();
+      });
     });
+
+    function getPatientListAsync() {
+      return new Promise(function(resolve, reject) {
+        contractInstance.get_patient_list({ gas: 1000000 }, function(error, result) {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(result || []);
+        });
+      });
+    }
+
+    function getDoctorListAsync() {
+      return new Promise(function(resolve, reject) {
+        contractInstance.get_doctor_list({ gas: 1000000 }, function(error, result) {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(result || []);
+        });
+      });
+    }
+
+    function addIpfsFileAsync(ipfs, buffer) {
+      return new Promise(function(resolve, reject) {
+        ipfs.files.add(buffer, function(error, result) {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(result || []);
+        });
+      });
+    }
+
+    function addAgentOnChainAsync(name, age, designation, ipfsHash, publicKey) {
+      return new Promise(function(resolve, reject) {
+        contractInstance.add_agent(name, age, designation, ipfsHash, { from: publicKey, gas: 1000000 }, async function(error, txHash) {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          try {
+            await waitForTransactionReceipt(txHash, 1000, 120000);
+            resolve(txHash);
+          } catch (receiptError) {
+            reject(receiptError);
+          }
+        });
+      });
+    }
 
     async function addAgent() {
       try {
         await connect();
-      } catch (error) {
-        console.error(error);
-        $("#warning-alert").show();
-        return false;
-      }
 
-      const ipfs = window.IpfsApi('localhost', '5001');
-      const Buffer = window.IpfsApi().Buffer;
+        const ipfs = window.IpfsApi('localhost', '5001');
+        const Buffer = window.IpfsApi().Buffer;
+        const name = $("#name").val().trim();
+        const age = parseInt($("#age").val(), 10);
+        const designation = parseInt($("#designation").val(), 10);
+        const publicKey = normalizeAddress(getCurrentAccount());
 
-      const name = $("#name").val();
-      const age = $("#age").val();
-      const email = $("#email").val();
-      let designation = $("#designation").val();
-      designation = parseInt(designation);
+        if (!publicKey) {
+          throw new Error("No wallet account selected");
+        }
 
-      let publicKey = (window.ethereum && window.ethereum.selectedAddress) || (web3.eth.accounts && web3.eth.accounts[0]);
-      publicKey = publicKey.toLowerCase();
-      console.log("Public Key:", publicKey);
+        const patientList = normalizeAddressList(await getPatientListAsync());
+        const doctorList = normalizeAddressList(await getDoctorListAsync());
 
-      let validAgent = true;
-
-      contractInstance.get_patient_list({ gas: 1000000 }, function(error, PatientList) {
-        if (error) {
-          console.error(error);
+        if (patientList.includes(publicKey) || doctorList.includes(publicKey)) {
+          $("#warning-alert").hide();
+          $("#info-alert").show();
           return;
         }
-        contractInstance.get_doctor_list({ gas: 1000000 }, function(error, DoctorList) {
-          if (error) {
-            console.error(error);
-            return;
-          }
-          if (PatientList.includes(publicKey) || DoctorList.includes(publicKey)) {
-            validAgent = false;
-            $("#info-alert").show();
-            return;
-          }
 
-          $("#warning-alert").hide();
-          $("#info-alert").hide();
+        $("#warning-alert").hide();
+        $("#info-alert").hide();
 
-          const userData = `Name: ${name}\nAge: ${age}\nEmail: ${email}\nPublic Key: ${publicKey}`;
-          const buffer = Buffer.from(userData);
+        const userData = `Name: ${name}
+Age: ${age}
+Public Key: ${publicKey}`;
+        const buffer = Buffer.from(userData);
+        const result = await addIpfsFileAsync(ipfs, buffer);
+        const ipfsHash = result[0].hash;
 
-          ipfs.files.add(buffer, (error, result) => {
-            if (error) {
-              console.error(error);
-              return;
-            }
-            const ipfsHash = result[0].hash;
-            console.log("IPFS Hash:", ipfsHash);
+        await addAgentOnChainAsync(name, age, designation, ipfsHash, publicKey);
 
-            contractInstance.add_agent(name, age, designation, ipfsHash, { gas: 1000000 }, (err, res) => {
-              if (err) {
-                console.error(err);
-                return;
-              }
-              if (designation === 0) {
-                window.location.href = "./patient.html?key=" + publicKey;
-              } else if (designation === 1) {
-                window.location.href = "./doctor.html?key=" + publicKey;
-              }
-            });
-          });
-        });
-      });
-
-      return false; // Prevent form submission
+        if (designation === 0) {
+          window.location.href = "./patient.html?key=" + publicKey;
+        } else if (designation === 1) {
+          window.location.href = "./doctor.html?key=" + publicKey;
+        }
+      } catch (error) {
+        console.error(error);
+        $("#info-alert").hide();
+        $("#warning-alert").show();
+      }
     }
   </script>
 

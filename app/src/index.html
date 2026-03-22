@@ -130,21 +130,21 @@
             return;
         }
 
-        var publicKey = (window.ethereum && window.ethereum.selectedAddress) || (web3.eth.accounts && web3.eth.accounts[0]);
+        var publicKey = getCurrentAccount();
         if (!publicKey) {
             $(".alert-warning").show();
             return;
         }
 
-        var normalizedKey = publicKey.toLowerCase();
+        var normalizedKey = normalizeAddress(publicKey);
 
         try {
-            var patientList = await getPatientListAsync();
+            var patientList = normalizeAddressList(await getPatientListAsync());
             if (patientList.indexOf(normalizedKey) !== -1) {
                 location.href = "./patient.html?key=" + publicKey;
                 return;
             }
-            var doctorList = await getDoctorListAsync();
+            var doctorList = normalizeAddressList(await getDoctorListAsync());
             if (doctorList.indexOf(normalizedKey) !== -1) {
                 location.href = "./doctor.html?key=" + publicKey;
                 return;

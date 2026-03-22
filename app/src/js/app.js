@@ -49,6 +49,16 @@ function resolveContractAddress() {
   return DEFAULT_AGENT_CONTRACT_ADDRESS;
 }
 
+function normalizeAddress(address) {
+  return address ? address.toLowerCase() : "";
+}
+
+function normalizeAddressList(addresses) {
+  return (addresses || []).map(function(address) {
+    return normalizeAddress(address);
+  });
+}
+
 function getCurrentAccount() {
   if (window.ethereum && window.ethereum.selectedAddress) {
     return window.ethereum.selectedAddress;
@@ -62,6 +72,37 @@ function getCurrentAccount() {
   }
 
   return null;
+}
+
+function waitForTransactionReceipt(txHash, intervalMs, timeoutMs) {
+  return new Promise(function(resolve, reject) {
+    var startedAt = Date.now();
+    var pollInterval = intervalMs || 1000;
+    var timeout = timeoutMs || 120000;
+
+    function checkReceipt() {
+      web3.eth.getTransactionReceipt(txHash, function(error, receipt) {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        if (receipt) {
+          resolve(receipt);
+          return;
+        }
+
+        if (Date.now() - startedAt >= timeout) {
+          reject(new Error("Timed out while waiting for transaction confirmation"));
+          return;
+        }
+
+        setTimeout(checkReceipt, pollInterval);
+      });
+    }
+
+    checkReceipt();
+  });
 }
 
 async function connect(){
