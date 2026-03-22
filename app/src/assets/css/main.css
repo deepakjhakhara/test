@@ -1753,4 +1753,48 @@ section,
 --------------------------------------------------------------*/
 .starter-section {
   /* Add your styles here */
+  padding: 60px 0;
+  background-color: #f8f9fa;
+}
+
+/*--------------------------------------------------------------
+# Overflow Handling
+--------------------------------------------------------------*/
+html,
+body {
+  max-width: 100%;
+}
+
+.main,
+section,
+.container,
+.row,
+.table,
+.alert,
+pre,
+p,
+td,
+th,
+a {
+  min-width: 0;
+}
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table th,
+.table td,
+.alert,
+pre,
+p,
+a {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+pre {
+  white-space: pre-wrap;
 }
