@@ -295,6 +295,7 @@ populateDropdowns();
     var url_string = window.location.href;
     var url = new URL(url_string);
     var key ;
+    var patientProfileKey = "";
     var pname="";
     toggleRecordsButton = 0;
     var recordHash = "";
@@ -311,6 +312,13 @@ populateDropdowns();
         $(".alert-info").hide();
         $(".alert-danger").hide();
         key = normalizeAddress(getCurrentAccount());
+        var keyFromQuery = normalizeAddress(url.searchParams.get("key"));
+        var keyFromStorage = normalizeAddress(window.localStorage.getItem("agentUserKey"));
+        patientProfileKey = keyFromQuery || keyFromStorage || key;
+
+        if (patientProfileKey) {
+            window.localStorage.setItem("agentUserKey", patientProfileKey);
+        }
 
         var a = "";
         var b = 0;
@@ -323,7 +331,7 @@ populateDropdowns();
         
         // print patient details
         console.log("Getting Patient Data");
-        contractInstance.get_patient.call(key, {gas: 1000000}, function(error, result){
+        contractInstance.get_patient.call(patientProfileKey, {gas: 1000000}, function(error, result){
             console.log("Patient Data Result:"+result);
             if(!error){
                 console.log(result);
@@ -336,6 +344,9 @@ populateDropdowns();
                 $("#age").html(formatUint(b));
                 $("#recordsHash").html(recordHash);
                 pname=a;
+                if (!a) {
+                    $(".alert-danger").show();
+                }
             }
             else
                 console.error(error);
@@ -376,7 +387,7 @@ populateDropdowns();
 
         // print out the doctors who have access
         var doctorAddressList = 0;
-        contractInstance.get_accessed_doctorlist_for_patient(key, {gas: 1000000}, function(error, result){
+        contractInstance.get_accessed_doctorlist_for_patient(patientProfileKey, {gas: 1000000}, function(error, result){
             if(!error){
                 doctorAddressList = result;
                 // console.log(result);
