@@ -139,7 +139,7 @@
       });
     });
 
-    function getPatientListAsync() {
+    function getStudentListAsync() {
       return new Promise(function(resolve, reject) {
         contractInstance.get_patient_list({ gas: 1000000 }, function(error, result) {
           if (error) {
@@ -151,7 +151,7 @@
       });
     }
 
-    function getDoctorListAsync() {
+    function getTeacherListAsync() {
       return new Promise(function(resolve, reject) {
         contractInstance.get_doctor_list({ gas: 1000000 }, function(error, result) {
           if (error) {
@@ -208,10 +208,10 @@
           throw new Error("No wallet account selected");
         }
 
-        const patientList = normalizeAddressList(await getPatientListAsync());
-        const doctorList = normalizeAddressList(await getDoctorListAsync());
+        const studentList = normalizeAddressList(await getStudentListAsync());
+        const teacherList = normalizeAddressList(await getTeacherListAsync());
 
-        if (patientList.includes(publicKey) || doctorList.includes(publicKey)) {
+        if (studentList.includes(publicKey) || teacherList.includes(publicKey)) {
           $("#warning-alert").hide();
           $("#info-alert").show();
           return;
@@ -230,9 +230,9 @@ Public Key: ${publicKey}`;
         await addAgentOnChainAsync(name, age, designation, ipfsHash, publicKey);
 
         if (designation === 0) {
-          window.location.href = "./patient.html?key=" + publicKey;
+          window.location.href = "./student.html?key=" + publicKey;
         } else if (designation === 1) {
-          window.location.href = "./doctor.html?key=" + publicKey;
+          window.location.href = "./teacher.html?key=" + publicKey;
         }
       } catch (error) {
         console.error(error);

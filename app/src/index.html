@@ -95,7 +95,7 @@
 
     connect().catch(function(error){ console.error(error); $(".alert-warning").show(); });
 
-    function getPatientAsync(publicKey) {
+    function getStudentAsync(publicKey) {
       return new Promise(function(resolve, reject) {
         contractInstance.get_patient.call(publicKey, { gas: 1000000 }, function(error, result) {
           if (error) {
@@ -107,7 +107,7 @@
       });
     }
 
-    function getDoctorAsync(publicKey) {
+    function getTeacherAsync(publicKey) {
       return new Promise(function(resolve, reject) {
         contractInstance.get_doctor.call(publicKey, { gas: 1000000 }, function(error, result) {
           if (error) {
@@ -137,15 +137,15 @@
         }
 
         try {
-            var patient = await getPatientAsync(publicKey);
-            if (patient[0] && String(patient[0]).trim().length > 0) {
-              location.href = "./patient.html?key=" + publicKey;
+            var student = await getStudentAsync(publicKey);
+            if (student[0] && String(student[0]).trim().length > 0) {
+              location.href = "./student.html?key=" + publicKey;
               return;
             }
 
-            var doctor = await getDoctorAsync(publicKey);
-            if (doctor[0] && String(doctor[0]).trim().length > 0) {
-              location.href = "./doctor.html?key=" + publicKey;
+            var teacher = await getTeacherAsync(publicKey);
+            if (teacher[0] && String(teacher[0]).trim().length > 0) {
+              location.href = "./teacher.html?key=" + publicKey;
               return;
             }
         } catch (error) {

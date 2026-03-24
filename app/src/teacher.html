@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScholarTrust | Teacher Dashboard</title>
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+  <h2>Teacher Dashboard</h2>
+  <p class="text-muted">View student documents only when access is granted on-chain.</p>
+
+  <div id="status" class="alert alert-info">Connecting wallet...</div>
+
+  <div class="card mb-4">
+    <div class="card-header">Teacher Profile</div>
+    <div class="card-body">
+      <p><strong>Name:</strong> <span id="name">-</span></p>
+      <p><strong>Age:</strong> <span id="age">-</span></p>
+      <p><strong>Wallet:</strong> <span id="wallet">-</span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Students You Can Access</div>
+    <div class="card-body">
+      <table class="table" id="studentsTable">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Address</th>
+            <th>Record Hash</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header">Document Content</div>
+    <div class="card-body">
+      <pre id="documentViewer">Select a student row and click "View Document".</pre>
+    </div>
+  </div>
+
+  <script src="js/jquery.js"></script>
+  <script src="/js/web3.min.js"></script>
+  <script src="https://unpkg.com/ipfs-api/dist/index.min.js" crossorigin="anonymous"></script>
+  <script src="js/app.js"></script>
+  <script>
+    var teacherAddress = "";
+
+    function setStatus(type, msg) {
+      $("#status").attr("class", "alert alert-" + type).text(msg);
+    }
+
+    function callContractView(method, args, opts) {
+      return new Promise(function(resolve, reject) {
+        var finalArgs = args.slice();
+        finalArgs.push(opts || {});
+        finalArgs.push(function(err, result) {
+          if (err) reject(err); else resolve(result);
+        });
+        method.call.apply(method, finalArgs);
+      });
+    }
+
+    async function loadProfile() {
+      var d = await callContractView(contractInstance.get_doctor, [teacherAddress], { gas: 1000000 });
+      $("#name").text(d[0] || "-");
+      $("#age").text(formatUint(d[1]) || "-");
+      $("#wallet").text(teacherAddress);
+    }
+
+    async function loadAccessibleStudents() {
+      var tbody = $("#studentsTable tbody");
+      tbody.empty();
+
+      var studentAddresses = await callContractView(contractInstance.get_accessed_patientlist_for_doctor, [teacherAddress], { gas: 1000000 });
+
+      if (!studentAddresses || !studentAddresses.length) {
+        tbody.append("<tr><td colspan='4'>No student has granted you access yet.</td></tr>");
+        return;
+      }
+
+      for (var i = 0; i < studentAddresses.length; i++) {
+        var studentAddr = studentAddresses[i];
+        var student = await callContractView(contractInstance.get_patient, [studentAddr], { gas: 1000000 });
+        var hash = student[4] || "-";
+        var studentName = student[0] || "Student";
+
+        var row = "<tr>" +
+          "<td>" + studentName + "</td>" +
+          "<td><code>" + studentAddr + "</code></td>" +
+          "<td><code>" + hash + "</code></td>" +
+          "<td><button class='btn btn-primary btn-sm view-doc' data-hash='" + hash + "'>View Document</button></td>" +
+          "</tr>";
+        tbody.append(row);
+      }
+    }
+
+    $(document).on("click", ".view-doc", async function() {
+      var hash = $(this).data("hash");
+      if (!hash || hash === "-") {
+        $("#documentViewer").text("No document hash found for this student.");
+        return;
+      }
+
+      try {
+        setStatus("info", "Fetching document from IPFS...");
+        var data = await readIpfsText(hash);
+        $("#documentViewer").text(data);
+        setStatus("success", "Document loaded from IPFS.");
+      } catch (err) {
+        console.error(err);
+        $("#documentViewer").text("Failed to load document. Hash: " + hash + "\n\n" + (err.message || err));
+        setStatus("danger", "Could not fetch document from IPFS.");
+      }
+    });
+
+    (async function init() {
+      try {
+        await connect();
+        teacherAddress = normalizeAddress(getCurrentAccount());
+        await loadProfile();
+        await loadAccessibleStudents();
+        setStatus("success", "Connected.");
+      } catch (err) {
+        console.error(err);
+        setStatus("danger", "Initialization failed: " + (err.message || err));
+      }
+    })();
+  </script>
+</body>
+</html>

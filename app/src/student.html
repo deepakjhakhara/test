@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScholarTrust | Student Dashboard</title>
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+  <h2>Student Dashboard</h2>
+  <p class="text-muted">Upload your documents to IPFS and control teacher access on-chain.</p>
+
+  <div id="status" class="alert alert-info">Connecting wallet...</div>
+
+  <div class="card mb-4">
+    <div class="card-header">Student Profile</div>
+    <div class="card-body">
+      <p><strong>Name:</strong> <span id="name">-</span></p>
+      <p><strong>Age:</strong> <span id="age">-</span></p>
+      <p><strong>Wallet:</strong> <span id="wallet">-</span></p>
+      <p><strong>Current IPFS Hash:</strong> <span id="currentHash">-</span></p>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Upload Document</div>
+    <div class="card-body">
+      <input id="docFile" type="file" class="form-control mb-3" accept=".txt,.pdf,.doc,.docx,.json" />
+      <button id="uploadBtn" class="btn btn-primary">Upload to IPFS + Save on Blockchain</button>
+      <p class="mt-3 mb-0" id="uploadResult"></p>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Grant Teacher Access</div>
+    <div class="card-body">
+      <p class="text-muted">Contract requires exact 2 ETH access fee.</p>
+      <select id="teacherSelect" class="form-select mb-3"></select>
+      <button id="grantBtn" class="btn btn-success">Grant Access (2 ETH)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Teachers With Access</div>
+    <div class="card-body">
+      <ul id="accessList" class="mb-0"></ul>
+    </div>
+  </div>
+
+  <script src="js/jquery.js"></script>
+  <script src="/js/web3.min.js"></script>
+  <script src="https://unpkg.com/ipfs-api/dist/index.min.js" crossorigin="anonymous"></script>
+  <script src="js/app.js"></script>
+  <script>
+    var ipfs = window.IpfsApi('localhost', '5001');
+    var Buffer = window.IpfsApi().Buffer;
+    var studentAddress = "";
+
+    function setStatus(type, msg) {
+      $("#status").attr("class", "alert alert-" + type).text(msg);
+    }
+
+    function callContract(method, args, opts) {
+      return new Promise(function(resolve, reject) {
+        var finalArgs = args.slice();
+        finalArgs.push(opts || {});
+        finalArgs.push(function(err, result) {
+          if (err) reject(err); else resolve(result);
+        });
+        method.apply(contractInstance, finalArgs);
+      });
+    }
+
+    function callContractView(method, args, opts) {
+      return new Promise(function(resolve, reject) {
+        var finalArgs = args.slice();
+        finalArgs.push(opts || {});
+        finalArgs.push(function(err, result) {
+          if (err) reject(err); else resolve(result);
+        });
+        method.call.apply(method, finalArgs);
+      });
+    }
+
+    function ipfsAdd(buffer) {
+      return new Promise(function(resolve, reject) {
+        ipfs.files.add(buffer, function(err, result) {
+          if (err) reject(err); else resolve(result);
+        });
+      });
+    }
+
+    async function loadProfile() {
+      var p = await callContractView(contractInstance.get_patient, [studentAddress], { gas: 1000000 });
+      $("#name").text(p[0] || "-");
+      $("#age").text(formatUint(p[1]) || "-");
+      $("#wallet").text(studentAddress);
+      $("#currentHash").text(p[4] || "-");
+    }
+
+    async function loadTeachers() {
+      var teacherAddresses = await callContractView(contractInstance.get_doctor_list, [], { gas: 1000000 });
+      var grantedTeachers = await callContractView(contractInstance.get_accessed_doctorlist_for_patient, [studentAddress], { gas: 1000000 });
+      var accessSet = {};
+      (grantedTeachers || []).forEach(function(addr) { accessSet[normalizeAddress(addr)] = true; });
+
+      var select = $("#teacherSelect");
+      select.empty();
+      select.append('<option value="">-- Select Teacher --</option>');
+      $("#accessList").empty();
+
+      for (var i = 0; i < teacherAddresses.length; i++) {
+        var teacherAddress = teacherAddresses[i];
+        var teacher = await callContractView(contractInstance.get_doctor, [teacherAddress], { gas: 1000000 });
+        var label = (teacher[0] || "Teacher") + " (" + teacherAddress + ")";
+        select.append('<option value="' + teacherAddress + '">' + label + '</option>');
+
+        if (accessSet[normalizeAddress(teacherAddress)]) {
+          $("#accessList").append('<li>' + label + '</li>');
+        }
+      }
+
+      if (!$("#accessList").children().length) {
+        $("#accessList").append('<li>No teacher currently has access.</li>');
+      }
+    }
+
+    async function uploadDocument() {
+      try {
+        var file = document.getElementById("docFile").files[0];
+        if (!file) {
+          alert("Please choose a file first.");
+          return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = async function() {
+          try {
+            setStatus("info", "Uploading file to IPFS...");
+            var buffer = Buffer.from(reader.result);
+            var result = await ipfsAdd(buffer);
+            var hash = result[0].hash;
+
+            setStatus("info", "Saving hash to blockchain. Confirm transaction in MetaMask...");
+            var tx = await callContract(contractInstance.set_hash_public, [studentAddress, hash], { from: studentAddress, gas: 1000000 });
+            await waitForTransactionReceipt(tx, 1000, 120000);
+
+            $("#uploadResult").html('Saved! IPFS Hash: <code>' + hash + '</code><br/>Gateway: <a href="http://127.0.0.1:8080/ipfs/' + hash + '" target="_blank">Open document</a>');
+            await loadProfile();
+            setStatus("success", "Document uploaded and anchored on blockchain.");
+          } catch (err) {
+            console.error(err);
+            setStatus("danger", "Upload failed: " + (err.message || err));
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } catch (err) {
+        console.error(err);
+        setStatus("danger", "Upload failed: " + (err.message || err));
+      }
+    }
+
+    async function grantAccess() {
+      var teacher = $("#teacherSelect").val();
+      if (!teacher) {
+        alert("Please select a teacher.");
+        return;
+      }
+
+      try {
+        setStatus("info", "Granting access. Confirm transaction in MetaMask...");
+        var tx = await callContract(contractInstance.permit_access, [teacher], {
+          from: studentAddress,
+          value: web3.toWei(2, "ether"),
+          gas: 1000000
+        });
+        await waitForTransactionReceipt(tx, 1000, 120000);
+        await loadTeachers();
+        setStatus("success", "Access granted successfully.");
+      } catch (err) {
+        console.error(err);
+        setStatus("danger", "Grant access failed: " + (err.message || err));
+      }
+    }
+
+    (async function init() {
+      try {
+        await connect();
+        studentAddress = normalizeAddress(getCurrentAccount());
+        await loadProfile();
+        await loadTeachers();
+        setStatus("success", "Connected.");
+      } catch (err) {
+        console.error(err);
+        setStatus("danger", "Initialization failed: " + (err.message || err));
+      }
+    })();
+
+    $("#uploadBtn").on("click", uploadDocument);
+    $("#grantBtn").on("click", grantAccess);
+  </script>
+</body>
+</html>
