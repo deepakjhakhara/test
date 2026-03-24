@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <title>ArogyaBlock | Patient</title>
+    <title>ScholarTrust | Student</title>
     <script src="js/bundle.js"></script>
 
     <!-- Fonts -->
@@ -45,7 +45,7 @@
                     <a href="index.html" class="logo d-flex align-items-center me-auto">
                         <!-- Uncomment the line below if you also wish to use an image logo -->
                         <!-- <img src="assets/img/logo.png" alt=""> -->
-                        <h1 class="sitename">ArogyaBlock</h1>
+                        <h1 class="sitename">ScholarTrust</h1>
                       </a>
                       <a class="cta-btn d-none d-sm-block" href="./index.html">Logout</a>
                 </div>
@@ -67,7 +67,7 @@
             <div>
                 <!-- Section Title -->
                 <div class="">
-                    <h3 class="text-center">Personal Information</h3>
+                    <h3 class="text-center">Student Profile</h3>
                     <p></p>
                 </div><!-- End Section Title -->
                 <div class="panel-body">
@@ -97,7 +97,7 @@
             </div>
             <div class="text-center" style="background-color: #f2f2f2; padding: 80px 0;">
                 <h5>Your records are stored here:</h5><p><a href=""> http://localhost:8080/ipfs/<span id="recordsHash"></span></a></p><br>
-                <button type="submit" class="cta-btn" onclick="showRecords(this)">View medical records</button>
+                <button type="submit" class="cta-btn" onclick="showRecords(this)">View academic records</button>
             </div>
             <pre id="records" style="padding: 40px; width: 60%; margin: auto; font-family: poppins; border: 2px solid #1977cc; border-radius: 10px; background-color: #1977cc10; color:#2c4964;">
                 <div id="notinclude">
@@ -164,19 +164,19 @@
             
             <div style="margin-top: 50px;">
                 <div class="panel-heading">
-                    <h3 class="text-center">Share your Medical Record</h3>
+                    <h3 class="text-center">Share your Academic Record</h3>
                 </div>
                 <div>
                     <div class="row" style="width:60%; margin: auto;">
                         <div class="alert alert-info" >
-                            <strong>Info!</strong> The doctor already has access to your records. Revoke access or wait for time duration to end to continue.
+                            <strong>Info!</strong> The teacher already has access to your records. Revoke access or wait for time duration to end to continue.
                         </div>
                     </div>
 
                     
                     <form class="form-horizontal" action="/action_page.php">
                         <div class="form-group" style="width:60%; margin:auto;"> 
-                            <label for="permitDoctorList" class="control-label col-sm-2">Doctor:</label>
+                            <label for="permitDoctorList" class="control-label col-sm-2">Teacher:</label>
                             <div class="col-sm-12">
                                 <select class="form-control" id="permitDoctorList">
                                     <option selected disabled>-- Please Select --</option>
@@ -193,7 +193,7 @@
             <br>
             <div class="" style="width:60%; margin:auto">
                 <div class="">
-                    <h3 class="text-center">Current Health record access holders</h3>
+                    <h3 class="text-center">Current Academic Record Access Holders</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -205,7 +205,7 @@
                         <div class="col-sm-offset-1 col-sm-10">
                             <table id="accessDoc" class="table table-hover">
                                 <tr>
-                                    <th>Doctor</th>
+                                    <th>Teacher</th>
                                     <th class="publicKeyDoctor">Public Key</th>
                                     <th>Revoke access</th>
                                 </tr>
@@ -421,12 +421,12 @@ populateDropdowns();
 
             toggleRecordsButton +=1
 
-            element.innerHTML = "Hide Medical Records";
+            element.innerHTML = "Hide Academic Records";
             element.className = "cta-btn";
         } else{
             $("#records").hide();
             toggleRecordsButton -=1;
-            element.innerHTML = "View Medical Records";
+            element.innerHTML = "View Academic Records";
             element.className = "cta-btn"
         }
         
