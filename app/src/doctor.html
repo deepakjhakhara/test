@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>ArogyaBlock | Doctor</title>
+    <title>ScholarTrust | Teacher</title>
     <script src="js/bundle.js"></script>
 
     <!-- Fonts -->
@@ -46,7 +46,7 @@
                 <a href="index.html" class="logo d-flex align-items-center me-auto">
                     <!-- Uncomment the line below if you also wish to use an image logo -->
                     <!-- <img src="assets/img/logo.png" alt=""> -->
-                    <h1 class="sitename">ArogyaBlock</h1>
+                    <h1 class="sitename">ScholarTrust</h1>
                   </a>
                   <a class="cta-btn d-none d-sm-block" href="./index.html">Logout</a>
             </div>
@@ -67,7 +67,7 @@
     
         <div class="">
             <div class="">
-                <h3 class="text-center">Personal Information</h3>
+                <h3 class="text-center">Teacher Profile</h3>
             </div>
             <div class="" style="width: 60%; margin: auto;">
                 <div class="row">
@@ -91,19 +91,19 @@
         <br>
         <div class="" style="width: 60%; margin: auto;">
             <div class="">
-                <h3 class="text-center">Accessible EMRs</h3>
+                <h3 class="text-center">Accessible Student Records</h3>
             </div>
             <div class="panel-body">
                 <div class="row">
                     <div class="alert alert-danger">
-                        <strong>Notice!</strong> Could not access records. Access might have been revoked. Contact admin or patient.
+                        <strong>Notice!</strong> Could not access records. Access might have been revoked. Contact admin or student.
                     </div>
                 </div>
                 <div class="row">
                     <div class="">
                         <table id="viewPatient" class="table">
                             <tr>
-                                <th>Patient</th>
+                                <th>Student</th>
                                 <th class="publicKeyPatient">Public Key</th>
                                 <th>Action</th>
                             </tr>
@@ -256,7 +256,7 @@
                                         <div class="row">
                                             <div class="form-group col-sm-10">
                                                 <div class="row">
-                                                    <div class="col-sm-2"><label for="ailmentsList" class="control-label">Diagnosis:</label></div>
+                                                    <div class="col-sm-2"><label for="ailmentsList" class="control-label">Assessment:</label></div>
                                                     <div class="col-sm-10">
                                                         <select class="form-control" id="ailmentsList${patientAddress}" style="width:inherit;" required>
                                                             <option selected disabled>-- Please Select --</option>
@@ -323,7 +323,7 @@
                                         </div>
                                         <br>
                                         <div class="alert alert-success" id="patientFriendlySummary`+patientAddress+`" style="display:none; margin-bottom: 15px;">
-                                            <strong>AI summary for patient:</strong>
+                                            <strong>AI summary for student:</strong>
                                             <p id="patientFriendlySummaryText`+patientAddress+`" style="margin-top:10px; white-space: pre-line;"></p>
                                         </div>
                                         <div class="form-group" style="align-item:centre; margin-left:80px">
@@ -485,7 +485,7 @@ Comments : ${comments}
 Diagnosis Time : ${getDateTime()}
 Diagnosis : ${diagnosed}
 Comments : ${comments}
-Simplified Summary For Patient: ${simplifiedDiagnosis || "Unavailable"}
+Simplified Summary For Student: ${simplifiedDiagnosis || "Unavailable"}
 -------------------------------------------------
 `
 
