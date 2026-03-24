@@ -161,6 +161,52 @@ function getAiGatewayBase() {
   return configured.endsWith("/") ? configured.slice(0, -1) : configured;
 }
 
+
+function formatUint(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (typeof value === "object") {
+    if (typeof value.toString === "function") {
+      return value.toString(10);
+    }
+    if (Array.isArray(value.c) && value.c.length > 0) {
+      return String(value.c[0]);
+    }
+  }
+
+  return String(value);
+}
+
+function getIpfsGatewayBase() {
+  var url = new URL(window.location.href);
+  var configured = url.searchParams.get("ipfsGateway") || window.localStorage.getItem("ipfsGateway") || window.IPFS_GATEWAY || "";
+
+  if (!configured) {
+    configured = "http://127.0.0.1:8080";
+  }
+
+  return configured.endsWith("/") ? configured.slice(0, -1) : configured;
+}
+
+function readIpfsText(hash) {
+  return new Promise(function(resolve, reject) {
+    if (!hash) {
+      reject(new Error("Missing IPFS hash"));
+      return;
+    }
+
+    $.get(getIpfsGatewayBase() + "/ipfs/" + hash)
+      .done(function(data) {
+        resolve(data);
+      })
+      .fail(function(error) {
+        reject(error);
+      });
+  });
+}
+
 function getPreliminaryDiagnosisApiUrl() {
   return getAiGatewayBase() + "/ai/preliminary-diagnosis";
 }

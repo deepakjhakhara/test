@@ -95,9 +95,9 @@
 
     connect().catch(function(error){ console.error(error); $(".alert-warning").show(); });
 
-    function getPatientListAsync() {
+    function getPatientAsync(publicKey) {
       return new Promise(function(resolve, reject) {
-        contractInstance.get_patient_list(function(error, result) {
+        contractInstance.get_patient.call(publicKey, { gas: 1000000 }, function(error, result) {
           if (error) {
             reject(error);
             return;
@@ -107,9 +107,9 @@
       });
     }
 
-    function getDoctorListAsync() {
+    function getDoctorAsync(publicKey) {
       return new Promise(function(resolve, reject) {
-        contractInstance.get_doctor_list(function(error, result) {
+        contractInstance.get_doctor.call(publicKey, { gas: 1000000 }, function(error, result) {
           if (error) {
             reject(error);
             return;
@@ -136,18 +136,17 @@
             return;
         }
 
-        var normalizedKey = normalizeAddress(publicKey);
-
         try {
-            var patientList = normalizeAddressList(await getPatientListAsync());
-            if (patientList.indexOf(normalizedKey) !== -1) {
-                location.href = "./patient.html?key=" + publicKey;
-                return;
+            var patient = await getPatientAsync(publicKey);
+            if (patient[0] && String(patient[0]).trim().length > 0) {
+              location.href = "./patient.html?key=" + publicKey;
+              return;
             }
-            var doctorList = normalizeAddressList(await getDoctorListAsync());
-            if (doctorList.indexOf(normalizedKey) !== -1) {
-                location.href = "./doctor.html?key=" + publicKey;
-                return;
+
+            var doctor = await getDoctorAsync(publicKey);
+            if (doctor[0] && String(doctor[0]).trim().length > 0) {
+              location.href = "./doctor.html?key=" + publicKey;
+              return;
             }
         } catch (error) {
             console.error(error);
@@ -155,9 +154,9 @@
             return;
         }
 
-          console.log("Invalid User!");
-          $(".alert-warning").show();
-        }
+        console.log("Invalid User!");
+        $(".alert-warning").show();
+    }
   </script>
 
 </body>

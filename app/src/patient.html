@@ -310,8 +310,7 @@ populateDropdowns();
         $("#records").hide();
         $(".alert-info").hide();
         $(".alert-danger").hide();
-        key = (window.ethereum && window.ethereum.selectedAddress) || (web3.eth.accounts && web3.eth.accounts[0]);
-        key = key.toLocaleLowerCase();
+        key = normalizeAddress(getCurrentAccount());
 
         var a = "";
         var b = 0;
@@ -334,7 +333,7 @@ populateDropdowns();
                 ailments = result[2];
                 recordHash = result[4];
                 $("#name").html(a);
-                $("#age").html(b.c[0]);
+                $("#age").html(formatUint(b));
                 $("#recordsHash").html(recordHash);
                 pname=a;
             }
@@ -412,12 +411,13 @@ populateDropdowns();
     function showRecords(element){
         if (toggleRecordsButton%2 == 0){
 
-            $.get("http://localhost:8080/ipfs/"+recordHash, function(data){
-                // $("#records").html(data);
-                // $("#records").show();
-                $("#records").html(data + $("#records").html());
+            readIpfsText(recordHash).then(function(data){
+                $("#records").text(data);
                 $("#records").show();
-            })
+            }).catch(function(error){
+                console.error(error);
+                $(".alert-danger").show();
+            });
 
             toggleRecordsButton +=1
 

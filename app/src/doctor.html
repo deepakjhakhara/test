@@ -168,8 +168,7 @@
         }
         $(".alert-danger").hide();
         
-        key = (window.ethereum && window.ethereum.selectedAddress) || (web3.eth.accounts && web3.eth.accounts[0]);
-        key = key.toLocaleLowerCase();
+        key = normalizeAddress(getCurrentAccount());
 
         var a = 0;
         var b = 0;
@@ -179,7 +178,7 @@
                 b = result[1];
                 docName = a;
                 $("#name").html(a);
-                $("#age").html(b.c[0]);
+                $("#age").html(formatUint(b));
             }
                 
             else
@@ -234,7 +233,7 @@
             contractInstance.get_hash(patientAddress, {gas: 1000000}, function(error, result){
                 if(!error){
 
-                    $.get("http://localhost:8080/ipfs/"+result, function(data){
+                    readIpfsText(result).then(function(data){
                         patientRecord = data;
                         const match = data.match(/Symptomes\s*:\s*(.+?)\s*[-]/g);
                         if (match) {
@@ -340,9 +339,11 @@
 
                         cell1.innerHTML=content;
 
-                    })
+                    }).catch(function(fetchError){
+                        console.error(fetchError);
+                        $(".alert-danger").show();
+                    });
 
-                    
                 }else{
                     console.log(error);
                 }
